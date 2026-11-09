@@ -148,6 +148,7 @@ footer { color: var(--muted); font-size: .88rem; }
       <button class="btn ghost" type="button" id="copyBtn">Copiar mensaje</button>
       <button class="btn ghost" type="button" id="editBtn">Editar</button>
     </div>
+    <p class="small" id="payNote"></p>
     <p class="small" id="waFallback"></p>
   </div>
 </section>
@@ -162,6 +163,7 @@ const CONFIG = {
   walkerName: "Patas por Castellón",
   whatsapp: "34600000000",            // prefijo de país + número, sin + ni espacios
   whatsappShown: "+34 600 00 00 00",
+  bizum: "+34 600 00 00 00",           // número de Bizum del paseador (déjalo vacío "" para ocultar el aviso de pago)
   extraDogPrice: 5,                    // € por perro adicional
   closedWeekdays: [0],                 // 0 = domingo
   firstHour: 8, lastHour: 20,          // franjas cada hora
@@ -232,6 +234,7 @@ function buildMessage() {
   ];
   if ($("notes").value.trim()) lines.push(`Notas: ${$("notes").value.trim()}`);
   lines.push(``, `Precio estimado: ${eur(price())}`);
+  if (CONFIG.bizum) lines.push(`Pago: por Bizum después del paseo`);
   return lines.join("\n");
 }
 
@@ -261,6 +264,9 @@ $("bookingForm").addEventListener("submit", e => {
   const msg = buildMessage();
   $("preview").textContent = msg;
   $("waLink").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+  $("payNote").textContent = CONFIG.bizum
+    ? `Pago: después del paseo, por Bizum al ${CONFIG.bizum}. No hace falta pagar nada ahora.`
+    : "";
   $("waFallback").textContent = `Si el botón no se abre, copia el mensaje y envíalo al ${CONFIG.whatsappShown}.`;
   $("bookingForm").hidden = true;
   $("done").hidden = false;
