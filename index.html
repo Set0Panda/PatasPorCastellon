@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patas por Castellón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: narrow single column, hero line + price list on top, booking form below, WhatsApp handoff at the end. */
+:root {
+  --bg: #f2f7f6;
+  --surface: #ffffff;
+  --ink: #10252b;
+  --muted: #55696e;
+  --sea: #0f6e73;
+  --sun: #f2b33d;
+  --line: #d3e0de;
+  --danger: #b3261e;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1a1d; --surface: #13272b; --ink: #e8f2f1; --muted: #9db3b3;
+    --sea: #4fc3c8; --sun: #f2b33d; --line: #25403f; --danger: #ff8a80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1a1d; --surface: #13272b; --ink: #e8f2f1; --muted: #9db3b3;
+  --sea: #4fc3c8; --sun: #f2b33d; --line: #25403f; --danger: #ff8a80;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 400 17px/1.5 var(--font-body); }
+.wrap { max-width: 680px; margin: 0 auto; padding: 32px 16px 56px; display: flex; flex-direction: column; gap: 28px; }
+h1, h2 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2rem, 7vw, 2.9rem); font-weight: 800; }
+h2 { font-size: 1.35rem; font-weight: 800; }
+.brand { font-family: var(--font-display); font-weight: 800; color: var(--sea); letter-spacing: .01em; }
+header { display: flex; flex-direction: column; gap: 12px; }
+header p { margin: 0; color: var(--muted); max-width: 52ch; }
+.badge { align-self: flex-start; background: var(--sun); color: #2a1d00; font-weight: 600; font-size: .85rem; padding: 4px 10px; border-radius: 99px; }
+.prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.price { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.price strong { font-family: var(--font-display); font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+.price span { color: var(--muted); font-size: .95rem; }
+form, .done { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
+label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: .95rem; }
+input, select, textarea { font: inherit; font-weight: 400; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; }
+textarea { min-height: 76px; resize: vertical; }
+:focus-visible { outline: 3px solid var(--sea); outline-offset: 2px; }
+input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--danger); }
+.err { color: var(--danger); font-weight: 600; font-size: .9rem; margin: 0; min-height: 0; }
+.total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px dashed var(--line); padding-top: 14px; }
+.total b { font-family: var(--font-display); font-size: 1.8rem; font-variant-numeric: tabular-nums; }
+.btn { font: 600 1.05rem var(--font-body); border: 0; border-radius: 12px; padding: 14px 18px; background: var(--sea); color: #fff; cursor: pointer; text-align: center; text-decoration: none; display: inline-block; }
+:root[data-theme="dark"] .btn.primary { color: #06292b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #06292b; } }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn:hover { filter: brightness(1.08); }
+.done { gap: 12px; }
+.done[hidden] { display: none; }
+.done pre { white-space: pre-wrap; font: inherit; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin: 0; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.small { color: var(--muted); font-size: .88rem; margin: 0; }
+footer { color: var(--muted); font-size: .88rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<header>
+  <span class="brand" id="brandName">Patas por Castellón</span>
+  <h1>Reserva el paseo de tu perro en Castellón</h1>
+  <p>Paseos individuales y en grupo en el centro, el Grao y la Ribalta. Eliges servicio, día y hora, y la reserva me llega por WhatsApp para confirmarla.</p>
+  <span class="badge">Ejemplo: cambia nombre, precios y teléfono en el bloque CONFIG</span>
+</header>
+
+<section aria-labelledby="tarifas" style="display:flex;flex-direction:column;gap:12px">
+  <h2 id="tarifas">Tarifas</h2>
+  <div class="prices" id="priceList"></div>
+  <p class="small" id="extraNote"></p>
+</section>
+
+<section aria-labelledby="reservar" style="display:flex;flex-direction:column;gap:12px">
+  <h2 id="reservar">Reservar</h2>
+  <form id="bookingForm" novalidate>
+    <label for="service">Servicio
+      <select id="service" required></select>
+    </label>
+    <div class="row">
+      <label for="date">Fecha
+        <input type="date" id="date" required>
+        <p class="err" id="dateErr" role="alert"></p>
+      </label>
+      <label for="time">Hora
+        <select id="time" required></select>
+      </label>
+    </div>
+    <div class="row">
+      <label for="dogName">Nombre del perro
+        <input id="dogName" type="text" autocomplete="off" required>
+      </label>
+      <label for="dogs">Número de perros
+        <select id="dogs"><option>1</option><option>2</option><option>3</option></select>
+      </label>
+    </div>
+    <div class="row">
+      <label for="size">Tamaño
+        <select id="size">
+          <option>Pequeño (hasta 10 kg)</option>
+          <option>Mediano (10 a 25 kg)</option>
+          <option>Grande (más de 25 kg)</option>
+        </select>
+      </label>
+      <label for="zone">Zona de recogida
+        <select id="zone"></select>
+      </label>
+    </div>
+    <label for="address">Dirección de recogida
+      <input id="address" type="text" autocomplete="street-address" required>
+    </label>
+    <label for="ownerName">Tu nombre
+      <input id="ownerName" type="text" autocomplete="name" required>
+    </label>
+    <label for="notes">Notas (opcional)
+      <textarea id="notes" placeholder="Tira de la correa, no se lleva bien con otros machos, alergias..."></textarea>
+    </label>
+    <p class="err" id="formErr" role="alert"></p>
+    <div class="total"><span>Precio estimado</span><b id="total">0 €</b></div>
+    <button class="btn primary" type="submit">Preparar reserva</button>
+  </form>
+
+  <div class="done" id="done" hidden>
+    <h2>Último paso</h2>
+    <p style="margin:0">Esto es lo que se enviará. La reserva no está confirmada hasta que te responda por WhatsApp.</p>
+    <pre id="preview"></pre>
+    <div class="actions">
+      <a class="btn primary" id="waLink" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+      <button class="btn ghost" type="button" id="copyBtn">Copiar mensaje</button>
+      <button class="btn ghost" type="button" id="editBtn">Editar</button>
+    </div>
+    <p class="small" id="waFallback"></p>
+  </div>
+</section>
+
+<footer>No se guarda ningún dato en esta página. Los datos solo salen cuando tú los envías por WhatsApp.</footer>
+</main>
+
+<script>
+/* ===== CONFIG: lo único que hay que cambiar para otro paseador ===== */
+const CONFIG = {
+  brand: "Patas por Castellón",
+  walkerName: "Patas por Castellón",
+  whatsapp: "34600000000",            // prefijo de país + número, sin + ni espacios
+  whatsappShown: "+34 600 00 00 00",
+  extraDogPrice: 5,                    // € por perro adicional
+  closedWeekdays: [0],                 // 0 = domingo
+  firstHour: 8, lastHour: 20,          // franjas cada hora
+  zones: ["Centro", "Grao", "Ribalta", "Otra zona (lo confirmamos)"],
+  services: [
+    { id: "p30",  name: "Paseo individual 30 min", price: 10, note: "Ideal para una salida corta" },
+    { id: "p60",  name: "Paseo individual 60 min", price: 16, note: "Paseo largo con juego" },
+    { id: "grp",  name: "Paseo en grupo 60 min",   price: 11, note: "Máx. 4 perros, socialización" }
+  ]
+};
+/* ================================================================== */
+
+const $ = id => document.getElementById(id);
+const eur = n => n.toLocaleString("es-ES", { maximumFractionDigits: 2 }) + " €";
+
+document.title = CONFIG.brand;
+$("brandName").textContent = CONFIG.brand;
+
+// Tarifas
+$("priceList").innerHTML = CONFIG.services.map(s =>
+  `<div class="price"><span>${s.name}</span><strong>${eur(s.price)}</strong><span>${s.note}</span></div>`).join("");
+$("extraNote").textContent = `Perro adicional del mismo hogar: +${eur(CONFIG.extraDogPrice)} por paseo.`;
+
+// Selects
+$("service").innerHTML = CONFIG.services.map(s => `<option value="${s.id}">${s.name} (${eur(s.price)})</option>`).join("");
+$("zone").innerHTML = CONFIG.zones.map(z => `<option>${z}</option>`).join("");
+let hours = "";
+for (let h = CONFIG.firstHour; h <= CONFIG.lastHour; h++) {
+  const t = String(h).padStart(2, "0") + ":00";
+  hours += `<option>${t}</option>`;
+}
+$("time").innerHTML = hours;
+
+// Fecha mínima: mañana
+const pad = n => String(n).padStart(2, "0");
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+$("date").min = iso(tomorrow);
+$("date").value = iso(tomorrow);
+
+function price() {
+  const s = CONFIG.services.find(x => x.id === $("service").value);
+  const dogs = Number($("dogs").value);
+  return s.price + (dogs - 1) * CONFIG.extraDogPrice;
+}
+function refreshTotal() { $("total").textContent = eur(price()); }
+["service", "dogs"].forEach(id => $(id).addEventListener("change", refreshTotal));
+refreshTotal();
+
+function dateLong(value) {
+  const [y, m, d] = value.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+}
+
+function buildMessage() {
+  const s = CONFIG.services.find(x => x.id === $("service").value);
+  const dogs = Number($("dogs").value);
+  const lines = [
+    `Hola ${CONFIG.walkerName}, quiero reservar un paseo.`,
+    ``,
+    `Servicio: ${s.name}`,
+    `Fecha: ${dateLong($("date").value)}`,
+    `Hora: ${$("time").value}`,
+    `Perro: ${$("dogName").value.trim()}${dogs > 1 ? ` (${dogs} perros)` : ""}`,
+    `Tamaño: ${$("size").value}`,
+    `Recogida: ${$("address").value.trim()} (${$("zone").value})`,
+    `A nombre de: ${$("ownerName").value.trim()}`
+  ];
+  if ($("notes").value.trim()) lines.push(`Notas: ${$("notes").value.trim()}`);
+  lines.push(``, `Precio estimado: ${eur(price())}`);
+  return lines.join("\n");
+}
+
+function validate() {
+  let ok = true;
+  $("dateErr").textContent = ""; $("formErr").textContent = "";
+  ["date", "dogName", "address", "ownerName"].forEach(id => $(id).removeAttribute("aria-invalid"));
+  const v = $("date").value;
+  if (!v) { $("dateErr").textContent = "Elige una fecha."; $("date").setAttribute("aria-invalid", "true"); ok = false; }
+  else {
+    const [y, m, d] = v.split("-").map(Number);
+    const day = new Date(y, m - 1, d);
+    if (v < $("date").min) { $("dateErr").textContent = "Reserva con al menos un día de antelación."; $("date").setAttribute("aria-invalid", "true"); ok = false; }
+    else if (CONFIG.closedWeekdays.includes(day.getDay())) { $("dateErr").textContent = "Ese día no trabajamos. Elige otro."; $("date").setAttribute("aria-invalid", "true"); ok = false; }
+  }
+  const missing = [];
+  [["dogName", "nombre del perro"], ["address", "dirección de recogida"], ["ownerName", "tu nombre"]].forEach(([id, label]) => {
+    if (!$(id).value.trim()) { $(id).setAttribute("aria-invalid", "true"); missing.push(label); ok = false; }
+  });
+  if (missing.length) $("formErr").textContent = "Falta: " + missing.join(", ") + ".";
+  return ok;
+}
+
+$("bookingForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if (!validate()) return;
+  const msg = buildMessage();
+  $("preview").textContent = msg;
+  $("waLink").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+  $("waFallback").textContent = `Si el botón no se abre, copia el mensaje y envíalo al ${CONFIG.whatsappShown}.`;
+  $("bookingForm").hidden = true;
+  $("done").hidden = false;
+  $("done").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+$("editBtn").addEventListener("click", () => {
+  $("done").hidden = true; $("bookingForm").hidden = false;
+});
+
+$("copyBtn").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText($("preview").textContent);
+    $("copyBtn").textContent = "Copiado";
+  } catch (err) {
+    $("copyBtn").textContent = "Selecciona y copia el texto";
+  }
+  setTimeout(() => { $("copyBtn").textContent = "Copiar mensaje"; }, 2500);
+});
+</script>
+</body>
+</html>
